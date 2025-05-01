@@ -18,6 +18,6 @@ public class ApiErrorResponse extends ApiResponse {
 
   public static ApiErrorResponse of(final CustomResponseCode responseCode, final Object details) {
     return new ApiErrorResponse(
-        ApiErrorDetail.of(responseCode.getCode(), responseCode.getDescription(), details));
+        ApiErrorDetail.of(responseCode.getCode(), responseCode.getMessage(), details));
   }
 }
