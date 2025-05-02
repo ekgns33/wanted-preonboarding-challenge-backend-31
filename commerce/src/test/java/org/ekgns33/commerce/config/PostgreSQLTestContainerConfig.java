@@ -1,4 +1,4 @@
-package org.ekgns33.commerce;
+package org.ekgns33.commerce.config;
 
 import java.io.File;
 import java.util.Arrays;
