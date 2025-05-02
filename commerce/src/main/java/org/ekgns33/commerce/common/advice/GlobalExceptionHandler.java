@@ -6,6 +6,8 @@ import static org.ekgns33.commerce.common.exception.CommonErrorCode.INVALID_INPU
 import static org.ekgns33.commerce.common.exception.CommonErrorCode.RESOURCE_NOT_FOUND;
 
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,9 +15,9 @@ import org.ekgns33.commerce.common.exception.BusinessException;
 import org.ekgns33.commerce.common.exception.ResourceConflictException;
 import org.ekgns33.commerce.common.exception.ResourceNotFoundException;
 import org.ekgns33.commerce.common.response.ApiErrorResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -48,6 +50,17 @@ public class GlobalExceptionHandler {
         .body(ApiErrorResponse.of(RESOURCE_NOT_FOUND, e.getErrorDetail()));
   }
 
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  protected ResponseEntity<ApiErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+    String duplicatedField = extractFieldFromConstraintMessage(ex.getMessage()); // 메시지 파싱
+    Map<String, Object> details = Map.of(
+        duplicatedField, "이미 사용 중인 값입니다."
+    );
+    return ResponseEntity
+        .status(CONFLICT.getHttpStatus())
+        .body(ApiErrorResponse.of(CONFLICT, details));
+  }
+
   @ExceptionHandler(ResourceConflictException.class)
   protected ResponseEntity<ApiErrorResponse> handleResourceConflictException(
       ResourceConflictException e) {
@@ -67,11 +80,33 @@ public class GlobalExceptionHandler {
     return bindingResult.getFieldErrors().stream()
         .collect(
             Collectors.toMap(
-                FieldError::getField,
+                error -> camelToSnake(flattenField(error.getField())),
                 error -> {
                   String msg = error.getDefaultMessage();
                   return msg != null ? msg : "올바르지 않은 입력입니다.";
                 },
                 (existing, replacement) -> existing));
+  }
+
+  private String flattenField(String fieldPath) {
+    return fieldPath.contains(".")
+        ? fieldPath.substring(fieldPath.lastIndexOf('.') + 1)
+        : fieldPath;
+  }
+
+  private String camelToSnake(String input) {
+    return input.replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();
+  }
+
+  private  String extractFieldFromConstraintMessage(String message) {
+    if (message == null) return "unknown";
+
+    Pattern pattern = Pattern.compile("Key \\((.*?)\\)=");
+    Matcher matcher = pattern.matcher(message);
+    if (matcher.find()) {
+      return camelToSnake(matcher.group(1));
+    }
+
+    return "unknown";
   }
 }
