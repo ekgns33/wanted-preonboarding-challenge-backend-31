@@ -12,10 +12,10 @@ import lombok.NoArgsConstructor;
 public class ApiPageInfo {
   private Long totalItems;
   private Long totalPages;
-  private Long currentPage;
-  private Long perPage;
+  private Integer currentPage;
+  private Integer perPage;
 
-  public static ApiPageInfo of(long totalItems, long totalPages, Long currentPage, Long perPage) {
+  public static ApiPageInfo of(long totalItems, long totalPages, int currentPage, int perPage) {
     return new ApiPageInfo(totalItems, totalPages, currentPage, perPage);
   }
 }

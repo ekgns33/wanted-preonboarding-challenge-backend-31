@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class ApiPageData<T> {
 
   private List<T> items;
-  private ApiPageInfo apiPageInfo;
+  private ApiPageInfo pagination;
 
   public static <T> ApiPageData<T> of(List<T> items, ApiPageInfo apiPageInfo) {
     return new ApiPageData<>(items, apiPageInfo);
