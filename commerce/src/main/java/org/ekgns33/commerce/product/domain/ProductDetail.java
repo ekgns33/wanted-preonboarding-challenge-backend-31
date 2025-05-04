@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.AccessLevel;
@@ -29,7 +30,7 @@ public class ProductDetail {
   private Long productId;
 
   @Column(name = "weight")
-  private Double weight;
+  private BigDecimal weight;
 
   @Column(name = "dimensions")
   @JdbcTypeCode(SqlTypes.JSON)
@@ -55,7 +56,7 @@ public class ProductDetail {
   public ProductDetail(
       Long id,
       Long productId,
-      Double weight,
+      BigDecimal weight,
       Map<String, Object> dimensions,
       String materials,
       String countryOfOrigin,
@@ -75,7 +76,7 @@ public class ProductDetail {
 
   public static ProductDetail withOutId(
       Long productId,
-      Double weight,
+      BigDecimal weight,
       Map<String, Object> dimensions,
       String materials,
       String countryOfOrigin,

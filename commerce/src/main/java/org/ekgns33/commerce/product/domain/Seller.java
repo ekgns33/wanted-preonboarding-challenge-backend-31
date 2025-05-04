@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,7 +32,7 @@ public class Seller extends CreateAudit {
   private String logoUrl;
 
   @Column(name = "rating")
-  private Double rating;
+  private BigDecimal rating;
 
   @Column(name = "contact_email")
   private String contactEmail;
@@ -44,7 +45,7 @@ public class Seller extends CreateAudit {
       String name,
       String description,
       String logoUrl,
-      Double rating,
+      BigDecimal rating,
       String contactEmail,
       String contactPhone) {
     this.id = id;

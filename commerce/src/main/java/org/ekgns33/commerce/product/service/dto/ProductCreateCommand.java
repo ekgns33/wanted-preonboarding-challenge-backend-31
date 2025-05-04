@@ -21,7 +21,7 @@ public record ProductCreateCommand(
     List<Image> images,
     List<Long> tags) {
   public record Detail(
-      Double weight,
+      BigDecimal weight,
       Map<String, Object> dimensions,
       String materials,
       String countryOfOrigin,

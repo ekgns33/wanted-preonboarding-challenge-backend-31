@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class ProductService {
+public class ProductCommandService {
 
   private final SellerRepository sellerRepository;
   private final BrandRepository brandRepository;
