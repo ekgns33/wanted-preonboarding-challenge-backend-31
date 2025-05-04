@@ -6,6 +6,15 @@ plugins {
 
 group = 'org.ekgns33'
 version = '0.0.1-SNAPSHOT'
+def querydslOutput = file("$buildDir/generated/querydsl")
+
+sourceSets {
+	main {
+		java {
+			srcDir querydslOutput
+		}
+	}
+}
 
 java {
 	toolchain {
@@ -31,6 +40,12 @@ dependencies {
 	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
+	//queryDsl
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+
 
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -44,6 +59,11 @@ dependencies {
 	testImplementation 'io.rest-assured:rest-assured:5.5.1'
 }
 
+tasks.named('clean') {
+	doLast {
+		delete querydslOutput
+	}
+}
 tasks.named('test') {
 	useJUnitPlatform()
 }
