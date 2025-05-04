@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ekgns33.commerce.common.ControllerTest;
 import org.ekgns33.commerce.product.api.dto.ProductRequestMapper;
-import org.ekgns33.commerce.product.service.ProductService;
+import org.ekgns33.commerce.product.service.ProductCommandService;
 import org.ekgns33.commerce.product.service.dto.ProductSaveResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ class ProductControllerTest {
   private ObjectMapper objectMapper;
 
   @MockitoBean
-  private ProductService productService;
+  private ProductCommandService productCommandService;
 
   @MockitoBean
   private ProductRequestMapper productRequestMapper;
@@ -149,7 +149,7 @@ class ProductControllerTest {
      ],
      "tags": [1, 4, 7]
     }""";
-    when(productService.createProduct(any()))
+    when(productCommandService.createProduct(any()))
         .thenReturn(objectMapper.readValue(requestBody, ProductSaveResponse.class));
 
     mockMvc

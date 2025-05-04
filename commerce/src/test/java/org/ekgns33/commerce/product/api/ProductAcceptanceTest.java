@@ -20,13 +20,16 @@ import org.ekgns33.commerce.product.api.dto.ProductSaveRequest.ProductImageReque
 import org.ekgns33.commerce.product.api.dto.ProductSaveRequest.ProductOptionGroupRequest;
 import org.ekgns33.commerce.product.api.dto.ProductSaveRequest.ProductOptionRequest;
 import org.ekgns33.commerce.product.api.dto.ProductSaveRequest.ProductPriceRequest;
+import org.ekgns33.commerce.product.repository.ProductRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
 class ProductAcceptanceTest extends IntegrationTestSupport {
 
@@ -39,11 +42,19 @@ class ProductAcceptanceTest extends IntegrationTestSupport {
   @Autowired
   private TruncateDatabaseCleaner truncateDatabaseCleaner;
 
+  @Autowired
+  private ProductRepository productRepository;
+
   @BeforeEach()
   void setUp() {
     RestAssured.port = serverPort;
+  }
+
+  @AfterEach
+  void tearDown() {
     truncateDatabaseCleaner.truncateProductRelatedTables();
   }
+
 
 
   @DisplayName("상품 등록 성공")
@@ -142,6 +153,37 @@ class ProductAcceptanceTest extends IntegrationTestSupport {
         .log().all()
         .statusCode(HttpStatus.NOT_FOUND.value());
   }
+
+  @Test
+  @DisplayName("상품 조건 검색 성공")
+  @Sql(scripts = "/sql/v1_insert_product.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+  void search_product_success() {
+
+    given()
+        .contentType("application/json")
+        .header("Authorization", "Bearer test-token")
+        .queryParam("page", 1)
+        .queryParam("perPage", 10)
+        .queryParam("sort", "created_at:desc")
+        .queryParam("status", "ACTIVE")
+        .queryParam("minPrice", 10000)
+        .queryParam("maxPrice", 1000000)
+        .queryParam("search", "소파")
+        .log().all()
+        .when()
+        .get("/api/products")
+        .then()
+        .log().all()
+        .statusCode(HttpStatus.OK.value())
+        .body("success", equalTo(true))
+        .body("data.items.size()", equalTo(2))
+        .body("data.pagination.total_items", equalTo(2))
+        .body("data.pagination.total_pages", equalTo(1))
+        .body("data.pagination.current_page", equalTo(0))
+        .body("data.pagination.per_page", equalTo(10));
+
+  }
+
 
 
 
