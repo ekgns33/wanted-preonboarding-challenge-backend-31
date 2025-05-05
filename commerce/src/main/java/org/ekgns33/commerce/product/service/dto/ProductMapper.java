@@ -1,19 +1,19 @@
 package org.ekgns33.commerce.product.service.dto;
 
 import org.ekgns33.commerce.product.domain.Product;
-import org.ekgns33.commerce.product.domain.ProductCategory;
 import org.ekgns33.commerce.product.domain.ProductDetail;
 import org.ekgns33.commerce.product.domain.ProductImage;
 import org.ekgns33.commerce.product.domain.ProductOption;
 import org.ekgns33.commerce.product.domain.ProductOptionGroup;
 import org.ekgns33.commerce.product.domain.ProductPrice;
 import org.ekgns33.commerce.product.domain.ProductTag;
-import org.ekgns33.commerce.product.service.dto.ProductCreateCommand.Category;
-import org.ekgns33.commerce.product.service.dto.ProductCreateCommand.Detail;
-import org.ekgns33.commerce.product.service.dto.ProductCreateCommand.Image;
-import org.ekgns33.commerce.product.service.dto.ProductCreateCommand.Option;
-import org.ekgns33.commerce.product.service.dto.ProductCreateCommand.OptionGroup;
-import org.ekgns33.commerce.product.service.dto.ProductCreateCommand.Price;
+import org.ekgns33.commerce.product.service.dto.command.DetailVO;
+import org.ekgns33.commerce.product.service.dto.command.ImageVO;
+import org.ekgns33.commerce.product.service.dto.command.OptionGroupVO;
+import org.ekgns33.commerce.product.service.dto.command.OptionVO;
+import org.ekgns33.commerce.product.service.dto.command.PriceVO;
+import org.ekgns33.commerce.product.service.dto.command.ProductCategoryVO;
+import org.ekgns33.commerce.product.service.dto.command.ProductCreateCommand;
 
 public final class ProductMapper {
 
@@ -28,54 +28,54 @@ public final class ProductMapper {
         command.status());
   }
 
-  public static ProductDetail mapToProductDetail(Long productId, Detail detail) {
+  public static ProductDetail mapToProductDetail(Long productId, DetailVO detailVO) {
     return ProductDetail.withOutId(
         productId,
-        detail.weight(),
-        detail.dimensions(),
-        detail.materials(),
-        detail.countryOfOrigin(),
-        detail.warrantyInfo(),
-        detail.careInstructions(),
-        detail.additionalInfo());
+        detailVO.weight(),
+        detailVO.dimensions(),
+        detailVO.materials(),
+        detailVO.countryOfOrigin(),
+        detailVO.warrantyInfo(),
+        detailVO.careInstructions(),
+        detailVO.additionalInfo());
   }
 
-  public static ProductPrice mapToProductPrice(Long productId, Price price) {
+  public static ProductPrice mapToProductPrice(Long productId, PriceVO priceVO) {
     return ProductPrice.withOutId(
         productId,
-        price.basePrice(),
-        price.salePrice(),
-        price.costPrice(),
-        price.currency(),
-        price.taxRate());
+        priceVO.basePrice(),
+        priceVO.salePrice(),
+        priceVO.costPrice(),
+        priceVO.currency(),
+        priceVO.taxRate());
   }
 
-  public static ProductCategory mapToCategory(Long productId, Category category) {
-    return ProductCategory.withOutId(productId, category.categoryId(), category.isPrimary());
+  public static org.ekgns33.commerce.product.domain.ProductCategory mapToCategory(Long productId, ProductCategoryVO productCategoryVO) {
+    return org.ekgns33.commerce.product.domain.ProductCategory.withOutId(productId, productCategoryVO.categoryId(), productCategoryVO.isPrimary());
   }
 
-  public static ProductOptionGroup mapToOptionGroup(Long productId, OptionGroup optionGroup) {
-    return ProductOptionGroup.withOutId(productId, optionGroup.name(), optionGroup.displayOrder());
+  public static ProductOptionGroup mapToOptionGroup(Long productId, OptionGroupVO optionGroupVO) {
+    return ProductOptionGroup.withOutId(productId, optionGroupVO.name(), optionGroupVO.displayOrder());
   }
 
-  public static ProductOption mapToOption(Long optionGroupId, Option option) {
+  public static ProductOption mapToOption(Long optionGroupId, OptionVO optionVO) {
     return ProductOption.withOutId(
         optionGroupId,
-        option.name(),
-        option.additionalPrice(),
-        option.sku(),
-        option.stock(),
-        option.displayOrder());
+        optionVO.name(),
+        optionVO.additionalPrice(),
+        optionVO.sku(),
+        optionVO.stock(),
+        optionVO.displayOrder());
   }
 
-  public static ProductImage mapToImage(Long productId, Image image) {
+  public static ProductImage mapToImage(Long productId, ImageVO imageVO) {
     return ProductImage.withOutId(
         productId,
-        image.optionId(),
-        image.url(),
-        image.altText(),
-        image.isPrimary(),
-        image.displayOrder());
+        imageVO.optionId(),
+        imageVO.url(),
+        imageVO.altText(),
+        imageVO.isPrimary(),
+        imageVO.displayOrder());
   }
 
   public static ProductTag mapToTag(Long productId, Long tagId) {

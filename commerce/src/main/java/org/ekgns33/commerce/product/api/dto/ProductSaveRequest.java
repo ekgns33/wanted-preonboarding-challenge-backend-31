@@ -1,12 +1,9 @@
 package org.ekgns33.commerce.product.api.dto;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import org.ekgns33.commerce.common.valid.EnumValid;
 
 public record ProductSaveRequest(
@@ -22,32 +19,4 @@ public record ProductSaveRequest(
     List<ProductCategoryRequest> categories,
     List<ProductOptionGroupRequest> optionGroups,
     List<ProductImageRequest> images,
-    List<Long> tags) {
-
-  public record ProductDetailRequest(
-      Double weight,
-      Map<String, Object> dimensions,
-      String materials,
-      String countryOfOrigin,
-      String warrantyInfo,
-      String careInstructions,
-      Map<String, Object> additionalInfo) {}
-
-  public record ProductPriceRequest(
-      @Min(message = "기본 가격은 0보다 커야 합니다.", value = 1) BigDecimal basePrice,
-      @Min(message = "가격은 0보다 커야 합니다.", value = 1) BigDecimal salePrice,
-      @Min(message = "가격은 0보다 커야 합니다.", value = 1) BigDecimal costPrice,
-      String currency,
-      BigDecimal taxRate) {}
-
-  public record ProductCategoryRequest(Long categoryId, boolean isPrimary) {}
-
-  public record ProductOptionGroupRequest(
-      String name, Integer displayOrder, List<ProductOptionRequest> options) {}
-
-  public record ProductOptionRequest(
-      String name, BigDecimal additionalPrice, String sku, Integer stock, Integer displayOrder) {}
-
-  public record ProductImageRequest(
-      String url, String altText, boolean isPrimary, Integer displayOrder, Long optionId) {}
-}
+    List<Long> tags) {}
