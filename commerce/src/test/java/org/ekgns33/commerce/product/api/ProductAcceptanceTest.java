@@ -185,6 +185,20 @@ class ProductAcceptanceTest extends IntegrationTestSupport {
   }
 
 
+  @Test
+  @DisplayName("상품 상세 조회 성공")
+  public void get_product_detail_success() {
+    given()
+            .contentType("application/json")
+            .header("Authorization", "Bearer test-token")
+            .when()
+            .get("/api/products/{id}", 1)
+            .then()
+            .log().all()
+        .statusCode(HttpStatus.OK.value());
+
+  }
+
 
 
   private ProductSaveRequest getInvalidMockProductSaveRequest() {
