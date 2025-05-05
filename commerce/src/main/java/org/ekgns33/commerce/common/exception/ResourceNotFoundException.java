@@ -24,4 +24,10 @@ public class ResourceNotFoundException extends RuntimeException {
         "요청한 리소스를 찾을 수 없습니다.",
         Map.of("resourceType", resourceType.getClass().getSimpleName(), "resourceId", resourceId));
   }
+
+  public static ResourceNotFoundException of(Type resourceType, Long resourceId, String message) {
+    return new ResourceNotFoundException(
+        message,
+        Map.of("resourceType", resourceType.getClass().getSimpleName(), "resourceId", resourceId));
+  }
 }
