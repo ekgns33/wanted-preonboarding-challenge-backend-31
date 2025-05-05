@@ -1,5 +1,6 @@
 package org.ekgns33.commerce.product.repository.query;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Path;
@@ -7,8 +8,10 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.ekgns33.commerce.product.api.dto.ProductStatus;
 import org.ekgns33.commerce.product.domain.QBrand;
@@ -19,13 +22,20 @@ import org.ekgns33.commerce.product.domain.QProductImage;
 import org.ekgns33.commerce.product.domain.QProductOption;
 import org.ekgns33.commerce.product.domain.QProductOptionGroup;
 import org.ekgns33.commerce.product.domain.QProductPrice;
+import org.ekgns33.commerce.product.domain.QReview;
 import org.ekgns33.commerce.product.domain.QSeller;
-import org.ekgns33.commerce.product.service.dto.ProductSearchQuery;
+import org.ekgns33.commerce.product.service.dto.query.product.ProductOptionResponse;
+import org.ekgns33.commerce.product.service.dto.query.product.ProductOptionGroupResponse;
+import org.ekgns33.commerce.product.service.dto.query.product.ProductSearchQuery;
+import org.ekgns33.commerce.product.service.dto.query.ProductSimpleInfoDto;
+import org.ekgns33.commerce.product.service.dto.query.QBrandDetailDto;
 import org.ekgns33.commerce.product.service.dto.QSearchedProductDto;
 import org.ekgns33.commerce.product.service.dto.QSearchedProductDto_BrandDto;
 import org.ekgns33.commerce.product.service.dto.QSearchedProductDto_ImageDto;
 import org.ekgns33.commerce.product.service.dto.QSearchedProductDto_SellerDto;
 import org.ekgns33.commerce.product.service.dto.SearchedProductDto;
+import org.ekgns33.commerce.product.service.dto.query.QProductSimpleInfoDto;
+import org.ekgns33.commerce.product.service.dto.query.QSellerDetailDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
@@ -47,6 +57,9 @@ public class ProductSearchRepositoryImpl implements ProductSearchRepository {
   private final QProductImage image = QProductImage.productImage;
   private final QProductCategory productCategory = QProductCategory.productCategory;
   private final QCategory category = QCategory.category;
+  private final QReview review = QReview.review;
+
+
 
   @Override
   public Page<SearchedProductDto> search(ProductSearchQuery query) {
@@ -134,6 +147,90 @@ public class ProductSearchRepositoryImpl implements ProductSearchRepository {
             .fetchOne();
     return new PageImpl<>(content, query.pageable(), total);
   }
+
+  @Override
+  public Optional<ProductSimpleInfoDto> findSimpleInfoById(Long id) {
+
+    return Optional.ofNullable(
+        queryFactory
+            .select(
+                new QProductSimpleInfoDto(
+                    product.id,
+                    product.name,
+                    product.slug,
+                    product.shortDescription,
+                    product.fullDescription,
+                    new QSellerDetailDto(
+                        seller.id,
+                        seller.name,
+                        seller.description,
+                        seller.logoUrl,
+                        seller.rating,
+                        seller.contactEmail,
+                        seller.contactPhone),
+                    new QBrandDetailDto(
+                        brand.id, brand.name, brand.description, brand.logoUrl, brand.website),
+                    product.status,
+                    product.createdAt,
+                    product.updatedAt))
+            .from(product)
+            .join(brand)
+            .on(product.brandId.eq(brand.id))
+            .join(seller)
+            .on(product.sellerId.eq(seller.id))
+            .where(product.id.eq(id))
+            .fetchOne());
+  }
+
+  public List<ProductOptionGroupResponse> findProductOptionGroupDtoByProductId(Long productId) {
+    List<Tuple> results = queryFactory
+        .select(
+            optionGroup.id,
+            optionGroup.name,
+            optionGroup.displayOrder,
+            option.id,
+            option.name,
+            option.additionalPrice,
+            option.sku,
+            option.stock,
+            option.displayOrder
+        )
+        .from(optionGroup)
+        .leftJoin(option).on(option.optionGroupId.eq(optionGroup.id))
+        .where(optionGroup.productId.eq(productId))
+        .fetch();
+
+    Map<Long, ProductOptionGroupResponse> groupMap = new LinkedHashMap<>();
+
+    for (Tuple tuple : results) {
+      Long groupId = tuple.get(optionGroup.id);
+      if (!groupMap.containsKey(groupId)) {
+        ProductOptionGroupResponse groupDto = new ProductOptionGroupResponse(
+            groupId,
+            tuple.get(optionGroup.name),
+            tuple.get(optionGroup.displayOrder),
+            new ArrayList<>()
+        );
+        groupMap.put(groupId, groupDto);
+      }
+
+      Long optionId = tuple.get(option.id);
+      if (optionId != null) {
+        ProductOptionResponse optionDto = new ProductOptionResponse(
+            optionId,
+            tuple.get(option.name),
+            tuple.get(option.additionalPrice),
+            tuple.get(option.sku),
+            tuple.get(option.stock),
+            tuple.get(option.displayOrder)
+        );
+        groupMap.get(groupId).getOptions().add(optionDto);
+      }
+    }
+
+    return new ArrayList<>(groupMap.values());
+  }
+
 
   private OrderSpecifier<?>[] getOrderSpecifiers(Sort sort) {
     List<OrderSpecifier<?>> orders = new ArrayList<>();

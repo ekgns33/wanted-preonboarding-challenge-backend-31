@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.ekgns33.commerce.product.service.dto.ProductSearchQuery;
+import org.ekgns33.commerce.product.service.dto.query.product.ProductSearchQuery;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
