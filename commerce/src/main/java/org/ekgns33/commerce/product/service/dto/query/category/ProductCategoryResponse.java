@@ -1,5 +1,6 @@
 package org.ekgns33.commerce.product.service.dto.query.category;
 
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,7 @@ public class ProductCategoryResponse {
   private boolean isPrimary;
   private ParentCategoryResponse parent;
 
+  @QueryProjection
   public ProductCategoryResponse(
       Long categoryId,
       String name,
