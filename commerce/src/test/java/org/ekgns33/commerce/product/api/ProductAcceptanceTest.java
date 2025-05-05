@@ -14,12 +14,13 @@ import java.util.Map;
 import org.ekgns33.commerce.common.IntegrationTestSupport;
 import org.ekgns33.commerce.common.TruncateDatabaseCleaner;
 import org.ekgns33.commerce.product.api.dto.ProductSaveRequest;
-import org.ekgns33.commerce.product.api.dto.ProductSaveRequest.ProductCategoryRequest;
-import org.ekgns33.commerce.product.api.dto.ProductSaveRequest.ProductDetailRequest;
-import org.ekgns33.commerce.product.api.dto.ProductSaveRequest.ProductImageRequest;
-import org.ekgns33.commerce.product.api.dto.ProductSaveRequest.ProductOptionGroupRequest;
-import org.ekgns33.commerce.product.api.dto.ProductSaveRequest.ProductOptionRequest;
-import org.ekgns33.commerce.product.api.dto.ProductSaveRequest.ProductPriceRequest;
+import org.ekgns33.commerce.product.api.dto.ProductCategoryRequest;
+import org.ekgns33.commerce.product.api.dto.ProductDetailRequest;
+import org.ekgns33.commerce.product.api.dto.ProductImageRequest;
+import org.ekgns33.commerce.product.api.dto.ProductOptionGroupRequest;
+import org.ekgns33.commerce.product.api.dto.ProductOptionRequest;
+import org.ekgns33.commerce.product.api.dto.ProductPriceRequest;
+import org.ekgns33.commerce.product.api.dto.ProductUpdateRequest;
 import org.ekgns33.commerce.product.repository.ProductRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -196,6 +197,87 @@ class ProductAcceptanceTest extends IntegrationTestSupport {
             .then()
             .log().all()
         .statusCode(HttpStatus.OK.value());
+
+  }
+
+
+  @Test
+  @DisplayName("상품 수정 성공")
+  public void update_product_success() throws JsonProcessingException {
+    // Arrange
+
+    given()
+        .contentType("application/json")
+        .header("Authorization", "Bearer test-token")
+        .when()
+        .get("/api/products/{id}", 1)
+        .then()
+        .log().all()
+        .statusCode(HttpStatus.OK.value())
+        .body("success", equalTo(true))
+        .body("data.id", equalTo(1))
+        .body("data.name", equalTo("슈퍼 편안한 소파"));
+
+
+    List<ProductCategoryRequest> categories =
+        List.of(new ProductCategoryRequest(5L, true), new ProductCategoryRequest(8L, false));
+
+    ProductUpdateRequest request = new ProductUpdateRequest(
+        "업데이트된 슈퍼 편안한 소파",
+        "updated-super-comfortable-sofa",
+        "최고급 소재로 만든 편안한 소파",
+        "<p>이 소파는 최고급 소재로 제작되었으며...</p>",
+        1L,
+        2L,
+        "ACTIVE",
+        new ProductDetailRequest(
+            25.5,
+            Map.of("length", 200, "width", 85, "height", 90),
+            "고급 가죽, 목재, 폼",
+            "대한민국",
+            "3년 품질 보증",
+            "마른 천으로 표면을 닦아주세요",
+            Map.of("assembly_required", true, "assembly_time", "30분")),
+        new ProductPriceRequest(
+            BigDecimal.valueOf(599000),
+            BigDecimal.valueOf(499000),
+            BigDecimal.valueOf(350000),
+            "KRW",
+            BigDecimal.valueOf(10)),
+        categories,
+        List.of(new ProductOptionGroupRequest("색상", 1, List.of())),
+        List.of(),
+        List.of()
+    );
+
+    given()
+        .contentType("application/json")
+        .header("Authorization", "Bearer test-token")
+        .body(objectMapper.writeValueAsString(request))
+        .when()
+        .put("/api/products/{id}", 1)
+        .then()
+        .log().ifError()
+        .statusCode(HttpStatus.OK.value())
+        .body("success", equalTo(true))
+        .body("data.id", equalTo(1))
+        .body("data.name", equalTo("업데이트된 슈퍼 편안한 소파"))
+        .body("data.slug", equalTo("updated-super-comfortable-sofa"))
+        .body("data.created_at", notNullValue())
+        .body("data.updated_at", notNullValue())
+        .body("message", equalTo("상품이 성공적으로 수정되었습니다."));
+
+    given()
+        .contentType("application/json")
+        .header("Authorization", "Bearer test-token")
+        .when()
+        .get("/api/products/{id}", 1)
+        .then()
+        .log().all()
+        .statusCode(HttpStatus.OK.value())
+        .body("success", equalTo(true))
+        .body("data.id", equalTo(1))
+        .body("data.name", equalTo("업데이트된 슈퍼 편안한 소파"));
 
   }
 
