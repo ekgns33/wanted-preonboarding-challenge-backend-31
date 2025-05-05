@@ -1,4 +1,4 @@
-package org.ekgns33.commerce.product.domain;
+package org.ekgns33.commerce.seller.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
