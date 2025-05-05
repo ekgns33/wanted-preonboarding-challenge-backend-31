@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface ProductTagRepository extends JpaRepository<ProductTag, Long> {
 
   @Query(
-"""
+      """
       select new org.ekgns33.commerce.product.service.dto.query.product.ProductTagResponse(
         t.id,
         t.slug,
@@ -20,4 +20,6 @@ public interface ProductTagRepository extends JpaRepository<ProductTag, Long> {
       where pt.productId = :id
     """)
   List<ProductTagResponse> findProductTagDtoByProductId(Long id);
+
+  List<ProductTag> findAllByProductId(Long id);
 }

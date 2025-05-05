@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.ekgns33.commerce.common.audit.CreateUpdateAudit;
 import org.ekgns33.commerce.product.api.dto.ProductStatus;
+import org.ekgns33.commerce.product.service.dto.command.ProductUpdateCommand;
 
 @Table(name = "products")
 @Entity
@@ -77,5 +78,15 @@ public class Product extends CreateUpdateAudit {
         .brandId(brandId)
         .status(status)
         .build();
+  }
+
+  public void update(ProductUpdateCommand updateCommand) {
+    this.name = updateCommand.name();
+    this.slug = updateCommand.slug();
+    this.shortDescription = updateCommand.shortDescription();
+    this.fullDescription = updateCommand.fullDescription();
+    this.sellerId = updateCommand.sellerId();
+    this.brandId = updateCommand.brandId();
+    this.status = updateCommand.status();
   }
 }

@@ -23,8 +23,10 @@ public class Review extends CreateUpdateAudit {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   @Column(name = "product_id")
   private Long productId;
+
   @Column(name = "user_id")
   private Long userId;
 
@@ -48,8 +50,15 @@ public class Review extends CreateUpdateAudit {
   private Integer helpfulVotes;
 
   @Builder
-  private Review(Long id, Long productId, Long userId, Integer rating, String title, String content,
-      Boolean verifiedPurchase, Integer helpfulVotes) {
+  private Review(
+      Long id,
+      Long productId,
+      Long userId,
+      Integer rating,
+      String title,
+      String content,
+      Boolean verifiedPurchase,
+      Integer helpfulVotes) {
     this.id = id;
     this.productId = productId;
     this.userId = userId;

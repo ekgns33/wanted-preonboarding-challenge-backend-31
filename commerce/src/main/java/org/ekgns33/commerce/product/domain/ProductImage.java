@@ -9,6 +9,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.ekgns33.commerce.product.service.dto.command.ImageVO;
 import org.hibernate.annotations.ColumnDefault;
 
 @Table(name = "product_images")
@@ -64,5 +65,16 @@ public class ProductImage {
       Boolean isPrimary,
       Integer displayOrder) {
     return new ProductImage(null, productId, optionId, url, altText, isPrimary, displayOrder);
+  }
+
+  public void update(ImageVO imageVO) {
+    this.url = imageVO.url();
+    this.altText = imageVO.altText();
+    this.isPrimary = imageVO.isPrimary();
+    this.displayOrder = imageVO.displayOrder();
+  }
+
+  public String getEntityKey() {
+    return String.format("%s-%s", this.productId, this.altText);
   }
 }

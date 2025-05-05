@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface ProductImageRepository extends JpaRepository<ProductImage, Long> {
 
   @Query(
-"""
+      """
       select new org.ekgns33.commerce.product.service.dto.query.product.ProductImageResponse(
         pi.id,
         pi.url,
@@ -22,4 +22,6 @@ public interface ProductImageRepository extends JpaRepository<ProductImage, Long
       where pi.productId = :id
     """)
   List<ProductImageResponse> findProductImageDtoByProductId(Long id);
+
+  List<ProductImage> findAllByProductId(Long id);
 }

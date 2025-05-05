@@ -1,5 +1,6 @@
 package org.ekgns33.commerce.product.repository;
 
+import java.util.Optional;
 import org.ekgns33.commerce.product.domain.ProductPrice;
 import org.ekgns33.commerce.product.service.dto.query.product.ProductPriceResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,4 +21,6 @@ public interface ProductPriceRepository extends JpaRepository<ProductPrice, Long
               where pp.productId = :id
     """)
   ProductPriceResponse findProductPriceDtoByProductId(Long id);
+
+  Optional<ProductPrice> findByProductId(Long id);
 }

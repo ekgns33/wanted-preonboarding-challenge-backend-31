@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.ekgns33.commerce.product.service.dto.command.ProductCategoryVO;
 import org.hibernate.annotations.ColumnDefault;
 
 @Table(name = "product_categories")
@@ -45,5 +46,10 @@ public class ProductCategory {
         .categoryId(categoryId)
         .isPrimary(isPrimary)
         .build();
+  }
+
+  public void update(ProductCategoryVO category) {
+    this.categoryId = category.categoryId();
+    this.isPrimary = category.isPrimary();
   }
 }

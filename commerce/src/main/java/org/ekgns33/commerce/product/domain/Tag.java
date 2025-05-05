@@ -20,8 +20,10 @@ public class Tag {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   @Column(name = "name", nullable = false)
   private String name;
+
   @Column(name = "slug", unique = true, nullable = false)
   private String slug;
 
@@ -33,9 +35,6 @@ public class Tag {
   }
 
   public static Tag withOutId(String name, String slug) {
-    return Tag.builder()
-        .name(name)
-        .slug(slug)
-        .build();
+    return Tag.builder().name(name).slug(slug).build();
   }
 }

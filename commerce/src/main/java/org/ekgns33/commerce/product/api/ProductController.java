@@ -8,18 +8,22 @@ import org.ekgns33.commerce.common.response.ApiSuccessResponse;
 import org.ekgns33.commerce.product.api.dto.ProductRequestMapper;
 import org.ekgns33.commerce.product.api.dto.ProductSaveRequest;
 import org.ekgns33.commerce.product.api.dto.ProductSearchRequest;
-import org.ekgns33.commerce.product.service.ProductQueryService;
+import org.ekgns33.commerce.product.api.dto.ProductUpdateRequest;
 import org.ekgns33.commerce.product.service.ProductCommandService;
-import org.ekgns33.commerce.product.service.dto.ProductCreateCommand;
-import org.ekgns33.commerce.product.service.dto.query.product.ProductDetailQueryResponse;
+import org.ekgns33.commerce.product.service.ProductQueryService;
 import org.ekgns33.commerce.product.service.dto.ProductSaveResponse;
 import org.ekgns33.commerce.product.service.dto.SearchedProductDto;
+import org.ekgns33.commerce.product.service.dto.command.ProductCreateCommand;
+import org.ekgns33.commerce.product.service.dto.command.ProductUpdateCommand;
+import org.ekgns33.commerce.product.service.dto.command.ProductUpdateResponse;
+import org.ekgns33.commerce.product.service.dto.query.product.ProductDetailQueryResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -71,5 +75,16 @@ public class ProductController {
             "상품 상세 정보를 성공적으로 조회했습니다."
         )
     );
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<ApiSuccessResponse<ProductUpdateResponse>> updateProduct(
+      @PathVariable Long id,
+      @Valid @RequestBody ProductUpdateRequest productUpdateRequest) {
+    log.info("Product Update Request: {}", productUpdateRequest);
+    ProductUpdateCommand command = productRequestMapper.toCommand(productUpdateRequest);
+    ProductUpdateResponse response = productCommandService.updateProduct(id, command);
+    return ResponseEntity.ok(
+        ApiSuccessResponse.of(response, "상품이 성공적으로 수정되었습니다."));
   }
 }

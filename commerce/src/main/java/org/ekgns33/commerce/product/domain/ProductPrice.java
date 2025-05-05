@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.ekgns33.commerce.product.service.dto.command.PriceVO;
 import org.hibernate.annotations.ColumnDefault;
 
 @Table(name = "product_prices")
@@ -77,5 +78,26 @@ public class ProductPrice {
         .currency(currency)
         .taxRate(taxRate)
         .build();
+  }
+
+  public void update(PriceVO priceVO) {
+    validatePrice();
+    this.basePrice = priceVO.basePrice();
+    this.salePrice = priceVO.salePrice();
+    this.costPrice = priceVO.costPrice();
+    this.currency = priceVO.currency();
+    this.taxRate = priceVO.taxRate();
+  }
+
+  private void validatePrice() {
+    if (basePrice.compareTo(BigDecimal.ZERO) < 0) {
+      throw new IllegalArgumentException("Base price cannot be negative");
+    }
+    if (salePrice.compareTo(BigDecimal.ZERO) < 0) {
+      throw new IllegalArgumentException("Sale price cannot be negative");
+    }
+    if (costPrice.compareTo(BigDecimal.ZERO) < 0) {
+      throw new IllegalArgumentException("Cost price cannot be negative");
+    }
   }
 }

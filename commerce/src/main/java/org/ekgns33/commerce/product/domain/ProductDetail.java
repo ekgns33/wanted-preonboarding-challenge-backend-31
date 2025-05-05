@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.ekgns33.commerce.product.service.dto.command.DetailVO;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -93,5 +94,15 @@ public class ProductDetail {
         .careInstructions(careInstructions)
         .additionalInfo(additionalInfo)
         .build();
+  }
+
+  public void update(DetailVO detailVO) {
+    this.weight = detailVO.weight();
+    this.dimensions = detailVO.dimensions();
+    this.materials = detailVO.materials();
+    this.countryOfOrigin = detailVO.countryOfOrigin();
+    this.warrantyInfo = detailVO.warrantyInfo();
+    this.careInstructions = detailVO.careInstructions();
+    this.additionalInfo = detailVO.additionalInfo();
   }
 }
