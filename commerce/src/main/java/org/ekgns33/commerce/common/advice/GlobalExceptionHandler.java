@@ -51,13 +51,11 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(DataIntegrityViolationException.class)
-  protected ResponseEntity<ApiErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+  protected ResponseEntity<ApiErrorResponse> handleDataIntegrityViolation(
+      DataIntegrityViolationException ex) {
     String duplicatedField = extractFieldFromConstraintMessage(ex.getMessage()); // 메시지 파싱
-    Map<String, Object> details = Map.of(
-        duplicatedField, "이미 사용 중인 값입니다."
-    );
-    return ResponseEntity
-        .status(CONFLICT.getHttpStatus())
+    Map<String, Object> details = Map.of(duplicatedField, "이미 사용 중인 값입니다.");
+    return ResponseEntity.status(CONFLICT.getHttpStatus())
         .body(ApiErrorResponse.of(CONFLICT, details));
   }
 
@@ -98,7 +96,7 @@ public class GlobalExceptionHandler {
     return input.replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();
   }
 
-  private  String extractFieldFromConstraintMessage(String message) {
+  private String extractFieldFromConstraintMessage(String message) {
     if (message == null) return "unknown";
 
     Pattern pattern = Pattern.compile("Key \\((.*?)\\)=");

@@ -22,42 +22,36 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
   @Override
   public ProductRatingResponse findProductRatingWithReviewByProductId(Long productId) {
 
-    Tuple result = queryFactory
-        .select(
-            review.rating.avg(),
-            review.rating.count()
-        )
-        .from(review)
-        .where(review.productId.eq(productId))
-        .fetchOne();
+    Tuple result =
+        queryFactory
+            .select(review.rating.avg(), review.rating.count())
+            .from(review)
+            .where(review.productId.eq(productId))
+            .fetchOne();
 
-    BigDecimal average = Optional.ofNullable(result.get(review.rating.avg()))
-        .map(BigDecimal::valueOf)
-        .orElse(BigDecimal.ZERO);
+    BigDecimal average =
+        Optional.ofNullable(result.get(review.rating.avg()))
+            .map(BigDecimal::valueOf)
+            .orElse(BigDecimal.ZERO);
 
     Long count = Optional.ofNullable(result.get(review.rating.count())).orElse(0L);
 
-
-    Map<Integer, Long> rawDistribution = queryFactory
-        .select(review.rating, review.count())
-        .from(review)
-        .where(review.productId.eq(productId))
-        .groupBy(review.rating)
-        .fetch()
-        .stream()
-        .collect(Collectors.toMap(
-            tuple -> tuple.get(review.rating),
-            tuple -> tuple.get(review.count())
-        ));
+    Map<Integer, Long> rawDistribution =
+        queryFactory
+            .select(review.rating, review.count())
+            .from(review)
+            .where(review.productId.eq(productId))
+            .groupBy(review.rating)
+            .fetch()
+            .stream()
+            .collect(
+                Collectors.toMap(
+                    tuple -> tuple.get(review.rating), tuple -> tuple.get(review.count())));
 
     Map<String, Object> distribution = new HashMap<>();
     for (int i = 1; i <= 5; i++) {
       distribution.put(String.valueOf(i), rawDistribution.getOrDefault(i, 0L));
     }
-    return new ProductRatingResponse(
-        average,
-        count,
-        distribution
-    );
+    return new ProductRatingResponse(average, count, distribution);
   }
 }
